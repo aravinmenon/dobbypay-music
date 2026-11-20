@@ -1,0 +1,57 @@
+# Render Blueprint — DobbyPay Music API + Web
+# Dashboard: New → Blueprint → connect this repo
+services:
+  - type: web
+    name: dobbypay-music
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AUTO_APPROVE_USERS
+        value: "false"
+      - key: DB_SSL
+        value: "true"
+      - key: DB_CHARSET
+        value: utf8mb4
+      # Set these in Render Dashboard → Environment (do not commit secrets)
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: MYSQL_ADDON_HOST
+        sync: false
+      - key: MYSQL_ADDON_PORT
+        sync: false
+      - key: MYSQL_ADDON_USER
+        sync: false
+      - key: MYSQL_ADDON_PASSWORD
+        sync: false
+      - key: MYSQL_ADDON_DB
+        sync: false
+      - key: ADMIN_WHATSAPP
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: SMTP_REPLYTO
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

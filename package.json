@@ -1,0 +1,44 @@
+{
+  "name": "spotify-clone",
+  "private": true,
+  "version": "1.1.1",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "server": "node server/index.js",
+    "start": "node server/index.js",
+    "public-api": "node scripts/start-public-api.mjs",
+    "dev:all": "node scripts/dev-all.js",
+    "build": "vite build",
+    "build:render": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "vite build && cap sync android",
+    "cap:apk": "vite build && cap sync android && cd android && gradlew.bat assembleDebug",
+    "cap:open": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^18.0.0",
+    "express": "^5.2.1",
+    "lucide-react": "^1.47.0",
+    "mysql2": "^3.24.4",
+    "nodemailer": "^10.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.1.6"
+  }
+}

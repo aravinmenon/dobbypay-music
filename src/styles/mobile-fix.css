@@ -1,0 +1,310 @@
+/**
+ * Mobile / Capacitor layout fix — full-bleed width, no horizontal overflow.
+ * Targets phones + coarse-pointer devices that may report CSS width > 768.
+ */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+}
+
+.main-viewport,
+.content-wrapper,
+.view-content,
+.top-bar,
+.player-bar {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Phone + touch devices (covers Capacitor WebViews that report large CSS px) */
+@media (max-width: 1024px), ((hover: none) and (pointer: coarse)) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .hamburger-btn {
+    display: flex !important;
+  }
+
+  .nav-arrows {
+    display: none !important;
+  }
+
+  .app-container {
+    width: 100% !important;
+    height: 100dvh !important;
+    height: 100vh;
+    overflow: hidden !important;
+  }
+
+  .main-viewport {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Drawer sidebar — never reserve horizontal space */
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: min(280px, 85vw) !important;
+    max-width: 85vw !important;
+    z-index: 9000 !important;
+    transform: translateX(-105%) !important;
+    transition: transform 0.28s ease !important;
+    display: flex !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    flex: none !important;
+  }
+
+  .sidebar.sidebar--open {
+    transform: translateX(0) !important;
+  }
+
+  .sidebar-close-btn {
+    display: flex !important;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 8999;
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  /* Main panel fills entire screen */
+  .content-wrapper {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
+  }
+
+  .top-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px 12px !important;
+    border-radius: 0 !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .topbar-right {
+    flex: 1 !important;
+    min-width: 0 !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    overflow: hidden !important;
+  }
+
+  .dobby-topbar-wallet-btn {
+    padding: 6px 10px !important;
+    font-size: 0.8rem !important;
+    flex-shrink: 0;
+  }
+
+  .topbar-superadmin-btn {
+    padding: 6px 8px !important;
+    font-size: 0 !important;
+    gap: 4px !important;
+  }
+
+  .topbar-superadmin-btn svg {
+    margin: 0 !important;
+  }
+
+  .topbar-superadmin-btn span {
+    display: none !important;
+  }
+
+  .search-input-wrapper {
+    width: auto !important;
+    max-width: none !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .view-content,
+  .spotify-mobile-library,
+  .spotify-liked-view,
+  .spotify-tidyup-view {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 14px 14px calc(150px + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .view-content > * {
+    max-width: 100%;
+  }
+
+  /* Grids fill width */
+  .quick-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .quick-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .quick-card-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cards-grid,
+  .directors-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .music-card,
+  .media-card,
+  .playlist-card,
+  .album-card {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .section-title,
+  .greeting-title {
+    font-size: 1.35rem !important;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  /* Horizontal shelves stay inside viewport */
+  .home-search-pill-bar {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .home-theme-quick-bar,
+  .h-scroll-row {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Desktop player dock → hidden; floating mini + bottom tabs */
+  .spotify-desktop-player,
+  .player-bar.spotify-desktop-player {
+    display: none !important;
+  }
+
+  .spotify-floating-player {
+    display: flex !important;
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    width: auto !important;
+    max-width: calc(100% - 16px) !important;
+    box-sizing: border-box !important;
+    z-index: 999 !important;
+  }
+
+  .spotify-floating-progress-track {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+  }
+
+  .spotify-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    box-sizing: border-box !important;
+    z-index: 1000 !important;
+  }
+
+  .lyrics-drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .dobby-modal-card,
+  .modal-card {
+    max-width: calc(100vw - 24px) !important;
+    width: 100% !important;
+    margin: 12px !important;
+  }
+
+  /* Tables / long rows */
+  .track-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Extra-narrow phones */
+@media (max-width: 420px) {
+  .view-content {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .cards-grid,
+  .directors-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .top-bar {
+    padding: 8px 10px !important;
+  }
+}

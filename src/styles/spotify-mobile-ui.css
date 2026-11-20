@@ -1,0 +1,1575 @@
+/**
+ * Spotify mobile UI — home, profile drawer, bottom nav, shelves
+ */
+
+/* ── Profile drawer ── */
+.spotify-profile-drawer.sidebar {
+  background: #121212 !important;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom)) !important;
+  gap: 16px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.sp-profile-card {
+  background: #242424;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.sp-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
+}
+
+.sp-avatar,
+.sp-home-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e91e8c;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  padding: 0;
+}
+
+.sp-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sp-image-type-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.sp-image-type-hint {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  color: #b3b3b3;
+}
+
+.sp-song-cover-target {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sp-song-cover-target strong {
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.sp-song-cover-target span {
+  font-size: 0.78rem;
+  color: #b3b3b3;
+}
+
+.sp-image-preview-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  margin-bottom: 14px;
+}
+
+.sp-image-preview {
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: #282828;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sp-image-preview.is-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+
+.sp-image-preview.is-cover {
+  width: 120px;
+  height: 72px;
+  border-radius: 12px;
+}
+
+.sp-image-preview-actions {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-image-preview-actions .sp-settings-action {
+  margin-bottom: 0;
+  padding: 10px;
+}
+
+.sp-suggested-label {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #b3b3b3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sp-suggested-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sp-suggested-thumb {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: #b3b3b3;
+  cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.sp-suggested-thumb img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  background: #282828;
+}
+
+.sp-suggested-thumb span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px 4px;
+}
+
+.sp-suggested-thumb.active {
+  border-color: var(--spotify-green, #1db954);
+  color: #fff;
+}
+
+.sp-profile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sp-profile-name {
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-profile-sub {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+}
+
+.sp-profile-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 10px 0;
+}
+
+.sp-add-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 6px 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sp-add-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #3e3e3e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.sp-drawer-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 4px 20px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sp-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 14px 8px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  border-radius: 4px;
+}
+
+.sp-drawer-item:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sp-drawer-item--danger {
+  color: #f87171;
+  margin-top: 8px;
+}
+
+.spotify-profile-drawer .sidebar-library-panel,
+.spotify-profile-drawer .brand-logo-container,
+.spotify-profile-drawer .nav-group {
+  display: none;
+}
+
+/* ── Bottom nav 5 tabs ── */
+@media (max-width: 1024px), ((hover: none) and (pointer: coarse)) {
+  .spotify-bottom-nav {
+    height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    background: #000 !important;
+    border-top: none !important;
+  }
+
+  .spotify-nav-tab {
+    font-size: 9px !important;
+    gap: 3px !important;
+    color: #b3b3b3 !important;
+  }
+
+  .spotify-nav-tab.active {
+    color: #fff !important;
+  }
+
+  .spotify-floating-player {
+    bottom: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #531a1a !important;
+    border-radius: 8px !important;
+  }
+
+  .top-bar-mobile-hide {
+    display: none !important;
+  }
+}
+
+/* ── Home ── */
+.sp-home {
+  background: #000 !important;
+  padding: max(12px, env(safe-area-inset-top)) 14px calc(160px + env(safe-area-inset-bottom)) !important;
+}
+
+.sp-home-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sp-home-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.sp-play-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 18px;
+  background: var(--spotify-green, #1db954);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sp-play-all-btn:active {
+  transform: scale(0.98);
+  opacity: 0.92;
+}
+
+.sp-home-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+}
+
+.sp-home-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.sp-chip {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  background: #2a2a2a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.sp-chip.active {
+  background: #1db954;
+  color: #000;
+}
+
+.sp-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.sp-quick-tile {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #2a2a2a;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+  min-height: 56px;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  font-family: inherit;
+  color: #fff;
+}
+
+.sp-quick-tile:active {
+  background: #3a3a3a;
+}
+
+.sp-quick-img,
+.sp-quick-liked {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.sp-quick-liked {
+  background: linear-gradient(135deg, #450af5, #8e8cf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-quick-title {
+  padding: 0 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sp-shelf {
+  margin-bottom: 28px;
+}
+
+.sp-shelf-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.sp-shelf-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+}
+
+.sp-shelf-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sp-shelf-row::-webkit-scrollbar {
+  display: none;
+}
+
+.sp-mix-card,
+.sp-hit-card,
+.sp-album-card {
+  flex-shrink: 0;
+  width: 150px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: #fff;
+}
+
+.sp-mix-art {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.sp-mix-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sp-mix-badge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sp-mix-artists,
+.sp-hit-sub,
+.sp-album-sub {
+  font-size: 0.78rem;
+  color: #b3b3b3;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sp-hit-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.sp-hit-title,
+.sp-album-title {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-album-card {
+  width: 140px;
+}
+
+.sp-album-card img {
+  width: 140px;
+  height: 140px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* Search browse polish */
+.sp-search-page {
+  background: #000 !important;
+}
+
+.sp-search-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0 16px;
+}
+
+.sp-search-title {
+  flex: 1;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.sp-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  cursor: text;
+}
+
+.sp-search-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #121212;
+  font-family: inherit;
+}
+
+.sp-search-input input::placeholder {
+  color: #6a6a6a;
+}
+
+.sp-browse-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sp-browse-card {
+  position: relative;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 12px;
+  font-family: inherit;
+}
+
+.sp-browse-card span {
+  position: relative;
+  z-index: 1;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.sp-browse-card img {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  right: -8px;
+  bottom: -8px;
+  transform: rotate(25deg);
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Settings (liked songs JSON backup / restore) ── */
+.sp-settings {
+  padding: 8px 16px 120px;
+  max-width: 560px;
+}
+
+.sp-settings-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.sp-settings-back {
+  background: none;
+  border: none;
+  color: #fff;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.sp-settings-title {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.sp-settings-lead {
+  margin: 0 0 18px;
+  color: #b3b3b3;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.sp-settings-card {
+  background: #181818;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sp-settings-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sp-settings-card-head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.sp-settings-card-head p {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: #b3b3b3;
+}
+
+.sp-settings-action {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px 12px;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 10px;
+}
+
+.sp-settings-action:last-child {
+  margin-bottom: 0;
+}
+
+.sp-settings-action:active {
+  transform: scale(0.99);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sp-settings-action:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.sp-settings-action-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.sp-settings-action-text strong {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.sp-settings-action-text span {
+  font-size: 0.78rem;
+  color: #b3b3b3;
+  line-height: 1.35;
+}
+
+.sp-settings-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #b3b3b3;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding: 4px 2px;
+}
+
+.sp-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sp-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sp-profile-field span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #b3b3b3;
+  letter-spacing: 0.02em;
+}
+
+.sp-profile-field input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.sp-profile-field input:focus {
+  border-color: var(--spotify-green, #1db954);
+}
+
+.sp-settings-save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 9999px;
+  background: var(--spotify-green, #1db954);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sp-settings-save-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.sp-settings-toggle.is-on {
+  border-color: rgba(29, 185, 84, 0.45);
+  background: rgba(29, 185, 84, 0.08);
+}
+
+.sp-toggle-pill {
+  flex-shrink: 0;
+  min-width: 42px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 6px 8px;
+  border-radius: 9999px;
+  background: #333;
+  color: #b3b3b3;
+}
+
+.sp-toggle-pill.on {
+  background: var(--spotify-green, #1db954);
+  color: #000;
+}
+
+/* Search results page + song rows + history */
+.sp-results-page {
+  padding-bottom: 24px;
+}
+
+.sp-results-topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sp-search-input--compact {
+  flex: 1;
+  margin: 0;
+}
+
+.sp-search-clear {
+  background: none;
+  border: none;
+  color: #121212;
+  cursor: pointer;
+  display: flex;
+  padding: 2px;
+}
+
+.sp-results-chips,
+.sp-movie-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.sp-results-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 14px;
+}
+
+.sp-results-heading {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.sp-results-count {
+  margin: 4px 0 0;
+  color: #b3b3b3;
+  font-size: 0.85rem;
+}
+
+.sp-play-all-btn--sm {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+}
+
+.sp-search-pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+  scrollbar-width: none;
+}
+
+.sp-search-pills .spotify-filter-pill {
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.spotify-category-card {
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.sp-song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sp-song-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sp-song-row:active,
+.sp-song-row.active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sp-song-row.active .sp-song-title {
+  color: var(--spotify-green, #1db954);
+}
+
+.sp-song-cover {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sp-song-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sp-song-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-song-artist {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-song-like {
+  display: flex;
+  padding: 6px;
+}
+
+.sp-history-page {
+  padding: 8px 16px 120px;
+}
+
+.sp-history-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.sp-history-sub {
+  margin: 2px 0 0;
+  color: #b3b3b3;
+  font-size: 0.85rem;
+}
+
+.sp-history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 20px;
+  color: #b3b3b3;
+  gap: 8px;
+}
+
+.sp-history-empty p {
+  margin: 8px 0 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.sp-history-preview {
+  margin-bottom: 12px;
+}
+
+.sp-shelf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Movie-wise search results */
+.sp-movie-section {
+  margin-bottom: 18px;
+}
+
+.sp-movie-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-movie-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sp-movie-card.active {
+  border-color: var(--spotify-green, #1db954);
+  background: rgba(29, 185, 84, 0.12);
+}
+
+.sp-movie-card-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sp-movie-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sp-movie-card-title {
+  font-weight: 800;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-movie-card-sub {
+  color: #b3b3b3;
+  font-size: 0.8rem;
+}
+
+.sp-movie-card-play {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--spotify-green, #1db954);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sp-movie-hero {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.22), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sp-movie-hero-img {
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.sp-movie-hero-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.sp-movie-hero-label {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--spotify-green, #1db954);
+  margin-bottom: 4px;
+}
+
+.sp-movie-hero-text h2 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.sp-movie-hero-text p {
+  margin: 0 0 10px;
+  color: #b3b3b3;
+  font-size: 0.85rem;
+}
+
+/* Music Directors — language-wise browse + songs */
+.sp-directors-page {
+  padding-bottom: 180px;
+}
+
+.sp-director-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 36px 16px;
+  text-align: center;
+  color: #b3b3b3;
+}
+
+.sp-director-loading p {
+  margin: 8px 0 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.sp-director-loading span {
+  font-size: 0.8rem;
+}
+
+.sp-directors-lead {
+  margin: 0 0 14px;
+  color: #b3b3b3;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.sp-directors-langs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  scrollbar-width: none;
+}
+
+.sp-directors-langs .sp-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sp-director-lang-block {
+  margin-bottom: 22px;
+}
+
+.sp-director-lang-block h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.sp-directors-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sp-director-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sp-director-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #282828;
+}
+
+.sp-director-card-name {
+  font-weight: 800;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-director-card-tag {
+  color: #b3b3b3;
+  font-size: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.sp-director-card-lang {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  border-radius: 9999px;
+}
+
+.sp-director-detail-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sp-director-detail-top--sticky {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  padding: 8px 0 10px;
+  margin-bottom: 8px;
+  background: linear-gradient(180deg, #121212 70%, rgba(18, 18, 18, 0));
+}
+
+.sp-director-search-hint {
+  margin: -4px 0 12px;
+  padding: 0 2px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b3b3b3;
+}
+
+.sp-director-hero {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 14px;
+}
+
+.sp-director-hero-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.sp-director-hero-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.sp-director-hero-lang {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 4px;
+}
+
+.sp-director-hero-text h1 {
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.sp-director-hero-text p {
+  margin: 0 0 6px;
+  color: #e5e5e5;
+  font-size: 0.82rem;
+}
+
+.sp-director-hero-count {
+  color: #b3b3b3 !important;
+  font-size: 0.8rem !important;
+  margin-bottom: 10px !important;
+}
+
+.sp-song-index {
+  width: 22px;
+  flex-shrink: 0;
+  text-align: center;
+  color: #71717a;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.sp-page-meta {
+  color: #b3b3b3;
+  font-size: 0.82rem;
+  margin: 0 0 10px;
+  padding: 0 4px;
+}
+
+.sp-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 18px 0 28px;
+  padding-bottom: 20px;
+}
+
+.sp-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sp-page-btn.active {
+  background: var(--spotify-green, #1db954);
+  border-color: transparent;
+  color: #000;
+  font-weight: 800;
+}
+
+.sp-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sp-page-ellipsis {
+  color: #71717a;
+  padding: 0 2px;
+}
+
+.sp-mix-count {
+  margin: 6px 0 0;
+  color: #b3b3b3;
+  font-size: 0.75rem;
+}
+
+.queue-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+  background: rgba(0, 0, 0, 0.62);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.queue-sheet {
+  width: min(560px, 100%);
+  max-height: min(78vh, 720px);
+  background: #121212;
+  color: #fff;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px 24px;
+}
+
+.queue-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 12px;
+}
+
+.queue-sheet-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.queue-sheet-head p,
+.queue-empty {
+  margin: 4px 0 0;
+  color: #b3b3b3;
+  font-size: 0.85rem;
+}
+
+.queue-icon-btn,
+.queue-actions button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.queue-actions button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.queue-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.queue-row.is-current {
+  background: rgba(29, 185, 84, 0.16);
+}
+
+.queue-row.is-dragging {
+  opacity: 0.45;
+}
+
+.queue-grip {
+  color: #71717a;
+  display: flex;
+  cursor: grab;
+}
+
+.queue-play {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+}
+
+.queue-play img,
+.queue-play-fallback {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #282828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.queue-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-title,
+.queue-artist {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.queue-title {
+  font-weight: 650;
+}
+
+.queue-artist {
+  color: #b3b3b3;
+  font-size: 0.78rem;
+}
+
+.queue-actions {
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .queue-backdrop {
+    align-items: center;
+  }
+
+  .queue-sheet {
+    border-radius: 12px;
+    max-height: 70vh;
+  }
+}
