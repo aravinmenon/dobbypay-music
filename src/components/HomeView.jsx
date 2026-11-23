@@ -4,6 +4,7 @@ import { ALL_ACTORS } from '../data/indianMusicData';
 import { getSongCoverUrl } from '../services/phoneStorage';
 import { Heart, Play, Disc3, Clapperboard } from 'lucide-react';
 import { buildDailyMixQueue } from '../services/dailyMix';
+import { APP_FEATURES } from '../data/appFeatures';
 
 const LIKED_QUICK = {
   id: 'liked',
@@ -179,6 +180,26 @@ export default function HomeView() {
           ))}
         </div>
       </div>
+
+      <section className="sp-features-panel" aria-label="App features">
+        <div className="sp-features-head">
+          <h2 className="sp-features-title">What you can do</h2>
+          <p className="sp-features-sub">Cloud Express · resume play · Indian catalog · wallet · admin</p>
+        </div>
+        <div className="sp-features-scroll">
+          {APP_FEATURES.map((feat) => (
+            <article
+              key={feat.id}
+              className="sp-feature-card"
+              style={{ borderColor: `${feat.accent}55` }}
+            >
+              <span className="sp-feature-accent" style={{ background: feat.accent }} />
+              <h3>{feat.title}</h3>
+              <p>{feat.blurb}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {/* Play All + Directors + Theme */}
       <div className="sp-home-actions">

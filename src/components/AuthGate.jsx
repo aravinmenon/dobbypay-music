@@ -13,6 +13,7 @@ import {
   setApiBaseOverride,
   clearDeadApiOverride
 } from '../services/authService';
+import { APP_FEATURE_SHORT } from '../data/appFeatures';
 
 export default function AuthGate() {
   const {
@@ -253,6 +254,21 @@ export default function AuthGate() {
           <h1 className="auth-gate-title">
             {mode === 'register' ? 'Sign up for DobbyPay Music' : 'Log in to DobbyPay Music'}
           </h1>
+          <p className="auth-gate-live-line">
+            Cloud music app · Express API on Render
+          </p>
+        </div>
+
+        <div className="auth-feature-strip" aria-label="App features">
+          {APP_FEATURE_SHORT.map((feat) => (
+            <div key={feat.id} className="auth-feature-chip" style={{ '--feat-accent': feat.accent }}>
+              <span className="auth-feature-dot" aria-hidden />
+              <div className="auth-feature-copy">
+                <strong>{feat.title}</strong>
+                <span>{feat.blurb}</span>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Pending Approval Alert Modal / Banner */}

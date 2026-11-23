@@ -4519,6 +4519,132 @@ body.in-pip-mode .spotify-floating-title {
   display: none;
 }
 
+.auth-gate-live-line {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1DB954;
+  letter-spacing: 0.01em;
+}
+
+.auth-feature-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0 0 20px;
+  text-align: left;
+}
+
+.auth-feature-chip {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 10px 11px;
+  border-radius: 12px;
+  background: #181818;
+  border: 1px solid #282828;
+  min-height: 72px;
+}
+
+.auth-feature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+  background: var(--feat-accent, #1DB954);
+}
+
+.auth-feature-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.auth-feature-copy strong {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.auth-feature-copy span {
+  font-size: 0.68rem;
+  color: #a7a7a7;
+  line-height: 1.35;
+}
+
+.sp-features-panel {
+  margin: 4px 0 18px;
+}
+
+.sp-features-head {
+  margin-bottom: 10px;
+}
+
+.sp-features-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.sp-features-sub {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  color: #b3b3b3;
+}
+
+.sp-features-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sp-feature-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  position: relative;
+  padding: 14px 14px 14px 16px;
+  border-radius: 12px;
+  background: #181818;
+  border: 1px solid #282828;
+  overflow: hidden;
+}
+
+.sp-feature-accent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+
+.sp-feature-card h3 {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sp-feature-card p {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #b3b3b3;
+}
+
+@media (max-width: 420px) {
+  .auth-feature-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
 .auth-gate-tabs {
   display: flex;
   gap: 4px;
