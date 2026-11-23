@@ -54,4 +54,12 @@ services:
       - key: SMTP_REPLYTO
         sync: false
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: "https://dobbypay-music.onrender.com,capacitor://localhost,https://localhost,http://localhost:3000"
+      - key: APP_URL
+        value: "https://dobbypay-music.onrender.com/"
+      - key: VITE_API_BASE_URL
+        value: "https://dobbypay-music.onrender.com/api"
+      - key: VITE_PUBLIC_API_URL
+        value: "https://dobbypay-music.onrender.com/api"
+      - key: VITE_SONGS_API_URL
+        value: "https://dobbypay-music.onrender.com/api/songs"

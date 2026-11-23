@@ -631,7 +631,7 @@ app.get('/api/library', handleLibraryGet);
 app.put('/api/library', handleLibrarySave);
 app.post('/api/library', handleLibrarySave);
 
-// Legacy PHP Endpoint Compatibility Router
+// Legacy action-based URL shim (old PHP paths) → Express handlers
 app.all(['/backend/api/api.php', '/api.php', '/backend/api'], async (req, res) => {
   const action = req.query.action || req.body?.action;
   if (action === 'register') {

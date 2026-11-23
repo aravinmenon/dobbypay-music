@@ -6,13 +6,16 @@ const isLocalBrowser = typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') &&
   !isNativeApp;
 
+/** Production Express API hosted on Render */
+export const RENDER_API_BASE = 'https://dobbypay-music.onrender.com/api';
+
 /**
  * Resolves the API base URL:
  * 1. User manual override (from In-App Server Config modal)
  * 2. VITE_API_BASE_URL environment variable
- * 3. Native Android default: http://10.0.2.2:5000 (standard Android emulator loopback to host)
+ * 3. Native Android default: Render production API
  * 4. Local Web Dev: '/api' (proxied via Vite to http://127.0.0.1:5000)
- * 5. Production Web: window.location.origin
+ * 5. Production Web: same-origin /api or Render
  */
 /** Hosts that return HTML challenges / Safe Browsing blocks — never use for APK API. */
 function isBlockedPublicHost(url) {
@@ -72,33 +75,36 @@ export function getApiBase() {
     envIsExpress && /^https?:\/\//i.test(envBase) &&
     !/localhost|127\.0\.0\.1/i.test(envBase);
 
-  // Capacitor Native Android APK — must use a public/LAN Express URL (phones cannot use localhost)
+  // Capacitor Native Android APK — always use public HTTPS (phones cannot use localhost)
   if (isNativeApp) {
     if (envIsPublicHttp) {
       return envBase.endsWith('/api') ? envBase : `${envBase}/api`;
     }
-    if (envIsExpress && /^https?:\/\//i.test(envBase)) {
-      // Absolute URL that happens to mention localhost → rewrite for emulator only
+    if (envIsExpress && /^https?:\/\//i.test(envBase) && /localhost|127\.0\.0\.1/i.test(envBase)) {
+      // Emulator-only loopback rewrite
       return envBase
         .replace('localhost', '10.0.2.2')
         .replace('127.0.0.1', '10.0.2.2');
     }
-    // Last resort emulator loopback (real phones need VITE_API_BASE_URL public HTTPS)
-    return 'http://10.0.2.2:5000/api';
+    return RENDER_API_BASE;
   }
 
-  // Local Web Browser → Vite proxies /api to Express :5000 (Clever Cloud MySQL)
+  // Local Web Browser → Vite proxies /api to Express :5000, or use Render when configured
   if (isLocalBrowser) {
     if (envIsPublicHttp) return envBase.endsWith('/api') ? envBase : `${envBase}/api`;
     return envIsExpress && envBase !== '/api' && /^https?:\/\//i.test(envBase) ? envBase : '/api';
   }
 
-  // Production Web Deployment
+  // Production Web Deployment (same host as Render static + API)
   if (envIsExpress) {
     return envBase.endsWith('/api') || envBase === '/api' ? envBase : `${envBase}/api`;
   }
 
-  return '/api';
+  if (typeof window !== 'undefined' && /onrender\.com$/i.test(window.location.hostname)) {
+    return `${window.location.origin}/api`;
+  }
+
+  return RENDER_API_BASE;
 }
 
 /** Save / clear the in-app API override used by the APK and web client. */
@@ -123,56 +129,32 @@ export function setApiBaseOverride(url) {
 }
 
 /**
- * Cleanly resolves API endpoint against base URL without duplicate PHP script paths
+ * Resolve Express REST paths against the API base (PHP / XAMPP paths removed).
  */
 export function resolveApiUrl(base, endpoint) {
   if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
     return endpoint;
   }
-  
+
   const cleanBase = (base || '').trim().replace(/\/+$/, '');
-  
-  // If base points directly to a PHP file (e.g. api.php)
-  if (cleanBase.endsWith('.php')) {
-    const actionMatch = endpoint.match(/[?&]action=([^&]+)/);
-    if (actionMatch) {
-      return `${cleanBase}?action=${actionMatch[1]}`;
-    }
-    if (endpoint.includes('register')) return `${cleanBase}?action=register`;
-    if (endpoint.includes('login')) return `${cleanBase}?action=login`;
-    if (endpoint.includes('approve-user') || endpoint.includes('approve_user')) return `${cleanBase}?action=approve_user`;
-    if (endpoint.includes('admin/users') || endpoint.includes('admin_users')) return `${cleanBase}?action=admin_users`;
-    if (endpoint.includes('library')) return `${cleanBase}?action=library`;
-    if (endpoint.includes('songs')) return `${cleanBase}?action=songs`;
-    if (endpoint.includes('directors')) return `${cleanBase}?action=directors`;
-    if (endpoint.includes('test_db')) return `${cleanBase}?action=test_db`;
-    if (endpoint.startsWith('?')) return `${cleanBase}${endpoint}`;
-    return cleanBase;
-  }
 
-  // If base points to localhost:40 XAMPP backend directory (/dobbhypay/backend/api)
-  if (cleanBase.includes('/dobbhypay/backend/api') || cleanBase.includes(':40/')) {
-    if (endpoint.includes('register')) return `${cleanBase}/api.php?action=register`;
-    if (endpoint.includes('login')) return `${cleanBase}/api.php?action=login`;
-    if (endpoint.includes('library')) return `${cleanBase}/api.php?action=library`;
-    if (endpoint.includes('songs')) return `${cleanBase}/api.php?action=songs`;
-    if (endpoint.includes('directors')) return `${cleanBase}/api.php?action=directors`;
-    if (endpoint.includes('approve_user') || endpoint.includes('approve-user')) return `${cleanBase}/api.php?action=approve_user`;
-    if (endpoint.includes('admin/users') || endpoint.includes('admin_users')) return `${cleanBase}/api.php?action=admin_users`;
-    if (endpoint.includes('test_db')) return `${cleanBase}/api.php?action=test_db`;
-    if (endpoint.includes('upi')) return `${cleanBase}/upi.php`;
-    if (endpoint.includes('payments')) return `${cleanBase}/payments.php`;
-    if (endpoint.includes('clients')) return `${cleanBase}/clients.php`;
-    if (endpoint.includes('invoices')) return `${cleanBase}/invoices.php`;
-  }
-
-  // If endpoint is already a query string like ?action=register
+  // Legacy ?action=… → Express REST
   if (endpoint.startsWith('?')) {
-    if (cleanBase.endsWith('/api') || cleanBase === '/api') {
-      // Express compatibility router: /api?action=register (legacy) — prefer REST paths instead
-      return `${cleanBase}${endpoint}`;
+    const action = new URLSearchParams(endpoint.slice(1)).get('action');
+    const actionMap = {
+      login: 'auth/login',
+      register: 'auth/register',
+      songs: 'songs',
+      directors: 'directors',
+      library: 'library',
+      admin_users: 'admin/users',
+      approve_user: 'admin/approve-user',
+      test_db: 'health',
+      ping: 'health',
+    };
+    if (action && actionMap[action]) {
+      return `${cleanBase}/${actionMap[action]}`;
     }
-    return `${cleanBase}/api.php${endpoint}`;
   }
 
   // Avoid /api/api/... when base is already /api
@@ -194,11 +176,6 @@ export function resolveApiUrl(base, endpoint) {
 export async function apiFetch(endpoint, options = {}) {
   const base = getApiBase();
   let url = resolveApiUrl(base, endpoint);
-
-  // In local development browser, route InfinityFree through Vite proxy to eliminate CORS errors
-  if (isLocalBrowser && url.includes('dobbypay.infinityfreeapp.com')) {
-    url = url.replace('https://dobbypay.infinityfreeapp.com', '/infinityfree-api');
-  }
 
   const headers = {
     'Content-Type': 'application/json',
@@ -547,33 +524,15 @@ export function logoutUser() {
  * Fetch all users from MySQL database for Admin/Super Admin inspection
  */
 export async function fetchAdminUsers() {
-  const base = getApiBase();
-  const candidateEndpoints = base.endsWith('.php') || base.includes('dobbhypay/backend')
-    ? ['?action=admin_users']
-    : ['admin/users'];
-
-  for (const ep of candidateEndpoints) {
-    try {
-      const res = await apiFetch(ep);
-      if (res && res.ok) {
-        const data = await res.json();
-        if (data && data.users && Array.isArray(data.users)) {
-          return data.users;
-        }
+  try {
+    const res = await apiFetch('admin/users');
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data && data.users && Array.isArray(data.users)) {
+        return data.users;
       }
-    } catch (_) {}
-  }
-
-  // Express fallback via Vite proxy
-  if (isLocalBrowser) {
-    try {
-      const res = await fetch('/api/admin/users', { headers: { Accept: 'application/json' } });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data?.users)) return data.users;
-      }
-    } catch (_) {}
-  }
+    }
+  } catch (_) {}
   return [];
 }
 
@@ -586,49 +545,25 @@ export async function approveUserAndSendEmail(userId, approvedBy = 'Super Admin'
     action ||
     (String(approvedBy).toLowerCase().includes('super') ? 'super_approve' : 'admin_approve');
 
-  const base = getApiBase();
-  const candidateEndpoints = base.endsWith('.php') || base.includes('dobbhypay/backend')
-    ? ['?action=approve_user']
-    : ['admin/approve-user'];
-
   const body = { userId, approvedBy, action: resolvedAction };
 
-  for (const ep of candidateEndpoints) {
-    try {
-      const res = await apiFetch(ep, {
-        method: 'POST',
-        body: JSON.stringify(body)
-      });
-      if (res && res.ok) {
-        const data = await res.json();
-        if (data && (data.success || data.status)) {
-          return {
-            success: true,
-            message: data.message || 'User approved successfully!',
-            emailStatus: data.emailStatus,
-            user: data.user
-          };
-        }
-      }
-    } catch (_) {}
-  }
-
-  if (isLocalBrowser) {
-    const res = await fetch('/api/admin/approve-user', {
+  try {
+    const res = await apiFetch('admin/approve-user', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
     });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && (data.success || data.status)) {
-      return {
-        success: true,
-        message: data.message || 'User approved successfully!',
-        emailStatus: data.emailStatus,
-        user: data.user
-      };
+    if (res && res.ok) {
+      const data = await res.json();
+      if (data && (data.success || data.status)) {
+        return {
+          success: true,
+          message: data.message || 'User approved successfully!',
+          emailStatus: data.emailStatus,
+          user: data.user,
+        };
+      }
     }
-  }
+  } catch (_) {}
 
   throw new Error('Failed to approve user on server');
 }

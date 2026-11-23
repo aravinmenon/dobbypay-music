@@ -15,6 +15,7 @@ import {
   parseDurationSeconds,
 } from './saavnClient.js';
 import { searchItunesSafe } from './itunesClient.js';
+import { apiFetch } from './authService.js';
 export { getAudioSource } from './audioSource.js';
 export { fetchSaavnLyrics, lyricsPayloadToLines } from './saavnClient.js';
 export {
@@ -215,23 +216,17 @@ export async function searchFromFreeToUse(query, limit = 30) {
   }
 }
 
-// ─── DobbyPay Production Songs Catalog API (api.php) ───────
+// ─── DobbyPay Express Songs Catalog API (/api/songs) ───────
 export async function searchFromProductionSongsApi(query, limit = 40, language = 'all') {
   if (!query || !query.trim()) return [];
   try {
-    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    const base = isLocal ? '/dobbhypay/backend/api/api.php' : (import.meta.env.VITE_SONGS_API_URL || '/dobbhypay/backend/api/api.php');
-    const url = new URL(base.startsWith('http') ? base : `${window.location.origin}${base.startsWith('/') ? base : '/' + base}`);
-    url.searchParams.set('action', 'songs');
-    url.searchParams.set('search', query.trim());
-    if (language && language !== 'all') url.searchParams.set('language', language);
-    url.searchParams.set('limit', String(limit));
+    const params = new URLSearchParams({
+      search: query.trim(),
+      limit: String(limit),
+    });
+    if (language && language !== 'all') params.set('language', language);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
-    const res = await fetch(url.toString(), { signal: controller.signal });
-    clearTimeout(timeoutId);
-
+    const res = await apiFetch(`songs?${params.toString()}`);
     if (res.ok) {
       const data = await res.json();
       const songs = data?.songs || data?.results;
@@ -248,12 +243,12 @@ export async function searchFromProductionSongsApi(query, limit = 40, language =
           coverUrl: s.coverUrl || s.cover_url || getDefaultCover(idx),
           language: s.language || s.language_id || 'tamil',
           isFullSong: true,
-          isPreview: false
+          isPreview: Boolean(s.isPreview),
         }));
       }
     }
   } catch (err) {
-    console.warn("api.php songs notice:", err.message);
+    console.warn('Express /api/songs search notice:', err.message);
   }
   return [];
 }
@@ -598,37 +593,33 @@ export async function fetchDirectorHitsFromApi(directorName, limit = 500, langua
   const localDirectorTracks = filterTracks({ director: cleanName }) || [];
   localDirectorTracks.forEach((t) => pushTrack(t));
 
-  // 1b. MySQL / api.php catalog (optional)
+  // 1b. Express MySQL catalog (/api/songs?director=)
   try {
-    if (typeof window !== 'undefined') {
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const base = isLocal
-        ? '/dobbhypay/backend/api/api.php'
-        : (import.meta.env.VITE_SONGS_API_URL || '/dobbhypay/backend/api/api.php');
-      const dUrl = new URL(
-        base.startsWith('http')
-          ? base
-          : `${window.location.origin}${base.startsWith('/') ? base : `/${base}`}`
-      );
-      dUrl.searchParams.set('action', 'songs');
-      dUrl.searchParams.set('director', cleanName);
-      dUrl.searchParams.set('limit', String(Math.min(maxTracks, 300)));
-      const dRes = await fetch(dUrl.toString());
-      if (dRes.ok) {
-        const dData = await dRes.json();
-        const dSongs = dData?.songs || dData?.results || [];
-        for (const s of dSongs) {
-          pushTrack({
-            ...s,
-            director: s.director || directorName,
-            isFullSong: true,
-            isPreview: false,
-          });
-        }
+    const params = new URLSearchParams({
+      director: cleanName,
+      limit: String(Math.min(maxTracks, 300)),
+    });
+    const dRes = await apiFetch(`songs?${params.toString()}`);
+    if (dRes.ok) {
+      const dData = await dRes.json();
+      const dSongs = dData?.songs || dData?.results || [];
+      for (const s of dSongs) {
+        pushTrack({
+          ...s,
+          id: s.id,
+          title: s.title,
+          artist: s.artist,
+          audioUrl: s.audioUrl || s.audio_url,
+          coverUrl: s.coverUrl || s.cover_url,
+          durationSec: s.durationSec || s.duration_sec || 210,
+          director: s.director || s.director_name || directorName,
+          isFullSong: true,
+          isPreview: Boolean(s.isPreview),
+        });
       }
     }
   } catch (e) {
-    console.warn('api.php director songs fetch notice:', e.message);
+    console.warn('Express director songs fetch notice:', e.message);
   }
 
   // 2. JioSaavn multi-query (chunked so one failure does not wipe the catalog)

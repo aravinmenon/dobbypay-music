@@ -21,12 +21,21 @@ import {
   setSongCoverOverride,
 } from '../services/phoneStorage.js';
 import { CURATED_TRACKS } from '../data/indianMusicData';
-import { registerUser, loginUser, getCurrentUser, logoutUser, updateCurrentUserProfile } from '../services/authService';
+import { registerUser, loginUser, getCurrentUser, logoutUser, updateCurrentUserProfile, apiFetch } from '../services/authService';
 import { recordSongPlay } from '../services/listeningAnalytics';
 import { searchSongsFromApi, fetchDirectorHitsFromApi } from '../services/musicApi';
 import { fetchAccountLibrary, saveAccountLibrary } from '../services/librarySync';
+import { savePlaybackSession, loadPlaybackSession } from '../services/playbackSession.js';
 
 const PlayerContext = createContext();
+
+function readSavedPlaybackSession() {
+  try {
+    return loadPlaybackSession();
+  } catch (_) {
+    return null;
+  }
+}
 
 function createPlayerAudio() {
   const audio = new Audio();
@@ -76,7 +85,21 @@ export function PlayerProvider({ children }) {
   const wakeLockRef = useRef(null);
   const suppressAndroidNotifyRef = useRef(false);
 
-  const currentTrackRef = useRef(MOCK_TRACKS[0]);
+  const initialSessionRef = useRef(readSavedPlaybackSession());
+  const initialSession = initialSessionRef.current;
+  const initialTrack = initialSession?.track || MOCK_TRACKS[0];
+  const initialQueue =
+    initialSession?.queue?.length > 0 ? initialSession.queue : MOCK_TRACKS;
+  const initialQueueIndex = Math.min(
+    Math.max(0, initialSession?.queueIndex || 0),
+    Math.max(0, initialQueue.length - 1)
+  );
+  const resumePositionRef = useRef(Math.max(0, Number(initialSession?.position) || 0));
+  const resumeWasPlayingRef = useRef(Boolean(initialSession?.wasPlaying));
+  const didRestoreSessionRef = useRef(false);
+  const lastPersistAtRef = useRef(0);
+
+  const currentTrackRef = useRef(initialTrack);
   const audioCtxRef = useRef(null);
   const analyserRef = useRef(null);
   const sourceNodeRef = useRef(null);
@@ -85,10 +108,10 @@ export function PlayerProvider({ children }) {
   const currentUserRef = useRef(null);
 
   const [tracks] = useState(MOCK_TRACKS);
-  const [currentTrack, setCurrentTrack] = useState(MOCK_TRACKS[0]);
+  const [currentTrack, setCurrentTrack] = useState(initialTrack);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(MOCK_TRACKS[0].durationSec);
+  const [currentTime, setCurrentTime] = useState(resumePositionRef.current || 0);
+  const [duration, setDuration] = useState(initialTrack.durationSec || MOCK_TRACKS[0].durationSec);
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
@@ -98,14 +121,14 @@ export function PlayerProvider({ children }) {
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState('off'); // 'off', 'all', 'one'
 
-  const [queue, setQueue] = useState(MOCK_TRACKS);
-  const [queueIndex, setQueueIndex] = useState(0);
+  const [queue, setQueue] = useState(initialQueue);
+  const [queueIndex, setQueueIndex] = useState(initialQueueIndex);
 
   // Keep responsive refs synchronized so audio event listeners never use stale closures
   const isShuffleRef = useRef(false);
   const isRepeatRef = useRef('off');
-  const queueRef = useRef(MOCK_TRACKS);
-  const queueIndexRef = useRef(0);
+  const queueRef = useRef(initialQueue);
+  const queueIndexRef = useRef(initialQueueIndex);
 
   const isPlayingRef = useRef(false);
 
@@ -456,6 +479,22 @@ export function PlayerProvider({ children }) {
         } catch (_) {}
       }
 
+      // Persist last song + position so reopen resumes where the user stopped
+      const now = Date.now();
+      if (now - lastPersistAtRef.current > 2000) {
+        lastPersistAtRef.current = now;
+        const t = currentTrackRef.current;
+        if (t) {
+          savePlaybackSession({
+            track: t,
+            queue: queueRef.current,
+            queueIndex: queueIndexRef.current,
+            position: audio.currentTime || 0,
+            wasPlaying: !audio.paused,
+          });
+        }
+      }
+
       // Preload next track 12s before end so auto-next playback is 100% instant
       if (audio.duration && audio.currentTime > audio.duration - 12) {
         preloadNextTrack();
@@ -482,8 +521,17 @@ export function PlayerProvider({ children }) {
       if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'paused';
       }
-      if (suppressAndroidNotifyRef.current) return;
       const pausedTrack = currentTrackRef.current;
+      if (pausedTrack) {
+        savePlaybackSession({
+          track: pausedTrack,
+          queue: queueRef.current,
+          queueIndex: queueIndexRef.current,
+          position: audio.currentTime || 0,
+          wasPlaying: false,
+        });
+      }
+      if (suppressAndroidNotifyRef.current) return;
       if (pausedTrack) notifyAndroidPlayback(pausedTrack.title, pausedTrack.artist || pausedTrack.director, false);
     };
 
@@ -610,17 +658,101 @@ export function PlayerProvider({ children }) {
     };
   }, []);
 
+  const persistPlaybackNow = (wasPlayingOverride) => {
+    const audio = audioRef.current;
+    const t = currentTrackRef.current;
+    if (!t || !audio) return;
+    savePlaybackSession({
+      track: t,
+      queue: queueRef.current,
+      queueIndex: queueIndexRef.current,
+      position: audio.currentTime || 0,
+      wasPlaying:
+        typeof wasPlayingOverride === 'boolean' ? wasPlayingOverride : !audio.paused,
+    });
+  };
+
+  // Restore last song + seek position after app reopen (do not jump to first mock track)
+  useEffect(() => {
+    if (didRestoreSessionRef.current) return;
+    const session = initialSessionRef.current;
+    if (!session?.track) {
+      didRestoreSessionRef.current = true;
+      return;
+    }
+    didRestoreSessionRef.current = true;
+
+    const audio = audioRef.current;
+    const track = normalizeTrackForPlayback(session.track);
+    currentTrackRef.current = track;
+    setCurrentTrack(track);
+    const q = session.queue?.length ? session.queue : [track];
+    setQueue(q);
+    queueRef.current = q;
+    const idx = Math.min(Math.max(0, session.queueIndex || 0), q.length - 1);
+    setQueueIndex(idx);
+    queueIndexRef.current = idx;
+
+    const streamUrl = track.audioUrl || track.previewUrl || null;
+    if (!streamUrl || !audio) return;
+
+    const targetPos = Math.max(0, Number(session.position) || 0);
+    const shouldResumePlay = Boolean(session.wasPlaying);
+
+    const applySeekAndMaybePlay = () => {
+      try {
+        const max = Number.isFinite(audio.duration) && audio.duration > 0
+          ? Math.max(0, audio.duration - 0.35)
+          : targetPos;
+        const seekTo = Math.min(targetPos, max);
+        if (seekTo > 0) audio.currentTime = seekTo;
+        setCurrentTime(seekTo);
+        setDuration(audio.duration || track.durationSec || 0);
+      } catch (_) {}
+
+      updateMediaSession(track, shouldResumePlay);
+      if (shouldResumePlay) {
+        setIsPlaying(true);
+        notifyAndroidPlayback(track.title, track.artist || track.director, true);
+        audio.play().then(() => {
+          setIsPlaying(true);
+          setIsBuffering(false);
+        }).catch(() => {
+          // Browser may block autoplay until user taps — keep song + position ready
+          setIsPlaying(false);
+          persistPlaybackNow(false);
+        });
+      } else {
+        setIsPlaying(false);
+      }
+    };
+
+    try {
+      audio.src = streamUrl;
+      audio.load();
+    } catch (_) {}
+
+    if (audio.readyState >= 1) {
+      applySeekAndMaybePlay();
+    } else {
+      audio.addEventListener('loadedmetadata', applySeekAndMaybePlay, { once: true });
+    }
+  }, []);
+
   // Keep WebView timers + audio alive when phone locks / app backgrounds
   useEffect(() => {
     const onVisibility = () => {
       keepAndroidTimersAlive();
       const audio = audioRef.current;
       if (!audio) return;
-      if (document.visibilityState === 'hidden' && !audio.paused) {
-        const t = currentTrackRef.current;
-        if (t) {
-          updateMediaSession(t, true);
-          notifyAndroidPlayback(t.title, t.artist);
+      if (document.visibilityState === 'hidden') {
+        persistPlaybackNow(!audio.paused);
+        if (!audio.paused) {
+          const t = currentTrackRef.current;
+          if (t) {
+            updateMediaSession(t, true);
+            notifyAndroidPlayback(t.title, t.artist);
+          }
         }
       }
       if (document.visibilityState === 'visible' && isPlayingRef.current && audio.paused && audio.src) {
@@ -628,9 +760,14 @@ export function PlayerProvider({ children }) {
       }
     };
 
+    const onPageHide = () => {
+      persistPlaybackNow();
+      keepAndroidTimersAlive();
+    };
+
     document.addEventListener('visibilitychange', onVisibility);
-    window.addEventListener('pagehide', keepAndroidTimersAlive);
-    window.addEventListener('freeze', keepAndroidTimersAlive);
+    window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('freeze', onPageHide);
 
     let removeCapListener = null;
     (async () => {
@@ -639,13 +776,13 @@ export function PlayerProvider({ children }) {
         removeCapListener = await App.addListener('appStateChange', ({ isActive }) => {
           keepAndroidTimersAlive();
           if (!isActive) {
-            // Screen locked / app backgrounded — keep media session + foreground service
+            persistPlaybackNow();
             const t = currentTrackRef.current;
             if (t && !audioRef.current?.paused) {
               updateMediaSession(t, true);
               notifyAndroidPlayback(t.title, t.artist);
             }
-          } else if (isPlaying && audioRef.current?.paused && audioRef.current?.src) {
+          } else if (isPlayingRef.current && audioRef.current?.paused && audioRef.current?.src) {
             audioRef.current.play().catch(() => {});
           }
         });
@@ -654,8 +791,8 @@ export function PlayerProvider({ children }) {
 
     return () => {
       document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('pagehide', keepAndroidTimersAlive);
-      window.removeEventListener('freeze', keepAndroidTimersAlive);
+      window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('freeze', onPageHide);
       try { removeCapListener?.remove?.(); } catch (_) {}
     };
   }, []);
@@ -861,6 +998,14 @@ export function PlayerProvider({ children }) {
     const validIdx = resolveQueueIndex(activeQueue, trackToPlay, preferredIndex);
     setQueueIndex(validIdx);
     queueIndexRef.current = validIdx;
+
+    savePlaybackSession({
+      track: trackToPlay,
+      queue: activeQueue,
+      queueIndex: validIdx,
+      position: 0,
+      wasPlaying: true,
+    });
 
     // 3. Set new audio source and trigger playback immediately (sync play keeps lock-screen autoplay allowed)
     const startPlaybackWithUrl = (streamUrl) => {
@@ -1945,13 +2090,9 @@ const toggleLosslessMode = () => {
       triggerToast('🔄 Fetching all catalog songs from MySQL database...');
       let allSongs = [...CURATED_TRACKS, ...MOCK_TRACKS];
 
-      // Fetch from MySQL backend API if available (Local dev on 5000 / Production: dobbypay.rf.gd)
+      // Fetch from Express MySQL catalog (/api/songs)
       try {
-        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-        const targetUrl = isLocal
-          ? '/dobbhypay/backend/api/api.php?action=songs&limit=1000'
-          : (import.meta.env.VITE_SONGS_API_URL || '/dobbhypay/backend/api/api.php?action=songs&limit=1000');
-        const res = await fetch(targetUrl);
+        const res = await apiFetch('songs?limit=1000');
         if (res.ok) {
           const data = await res.json();
           const songsList = data?.songs || data?.results || (Array.isArray(data) ? data : []);
@@ -1960,7 +2101,7 @@ const toggleLosslessMode = () => {
           }
         }
       } catch (e) {
-        console.warn('MySQL songs fetch notice:', e.message);
+        console.warn('Express /api/songs fetch notice:', e.message);
       }
 
       // Batch save into localStorage

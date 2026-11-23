@@ -372,14 +372,14 @@ export default function AuthGate() {
             border: '1px solid rgba(255,107,0,0.35)'
           }}>
             <div style={{ fontSize: '0.8rem', color: '#ffb37a', marginBottom: 8, lineHeight: 1.4 }}>
-              Server link expired. On your PC keep <strong>npm run server</strong> + <strong>npm run public-api</strong> running, then paste the new HTTPS API URL here (ends with <code>/api</code>).
+              API unreachable. Use the Render Express URL ending with <code>/api</code> (default: <code>https://dobbypay-music.onrender.com/api</code>).
             </div>
             <div className="input-with-icon" style={{ marginBottom: 8 }}>
               <input
                 type="url"
                 value={apiUrlDraft}
                 onChange={(e) => setApiUrlDraft(e.target.value)}
-                placeholder="https://xxxx.trycloudflare.com/api"
+                placeholder="https://dobbypay-music.onrender.com/api"
                 style={{ width: '100%' }}
               />
             </div>
