@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PlayerProvider, usePlayer } from './context/PlayerContext';
 import Sidebar from './components/Sidebar';
+import WebSidebar from './components/WebSidebar';
 import TopNav from './components/TopNav';
 import PlayerBar from './components/PlayerBar';
 import HomeView from './components/HomeView';
@@ -27,10 +28,16 @@ import SettingsView from './components/SettingsView';
 import HistoryView from './components/HistoryView';
 import QueueSheet from './components/QueueSheet';
 import AuthGate from './components/AuthGate';
+import { applyAppSurface, isWebSurface } from './utils/appSurface';
 
 function MainLayout() {
   const { activeView, sidebarOpen, setSidebarOpen, searchQuery } = usePlayer();
   const contentRef = useRef(null);
+  const [isWeb, setIsWeb] = useState(() => isWebSurface());
+
+  useEffect(() => {
+    setIsWeb(applyAppSurface() === 'web');
+  }, []);
 
   // Open a fresh page at the top — never leave the user scrolled mid-page
   useEffect(() => {
@@ -43,11 +50,12 @@ function MainLayout() {
   }, [activeView, searchQuery]);
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${isWeb ? 'app-container--web' : 'app-container--mobile'}`}>
       <div className="main-viewport">
         {sidebarOpen && (
           <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
         )}
+        {isWeb ? <WebSidebar /> : null}
         <Sidebar />
         <main className="content-wrapper" ref={contentRef}>
           <TopNav />
@@ -85,6 +93,10 @@ function MainLayout() {
 function AppShell() {
   const { isLoggedIn } = usePlayer();
 
+  useEffect(() => {
+    applyAppSurface();
+  }, []);
+
   if (!isLoggedIn) {
     return <AuthGate />;
   }
@@ -93,6 +105,10 @@ function AppShell() {
 }
 
 export default function App() {
+  useEffect(() => {
+    applyAppSurface();
+  }, []);
+
   return (
     <PlayerProvider>
       <AppShell />

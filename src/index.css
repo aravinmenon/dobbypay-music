@@ -2,6 +2,7 @@
 @import './styles/spotify-theme.css';
 @import './styles/mobile-fix.css';
 @import './styles/spotify-mobile-ui.css';
+@import './styles/web-desktop-ui.css';
 
 :root {
   --bg-base: #000000;

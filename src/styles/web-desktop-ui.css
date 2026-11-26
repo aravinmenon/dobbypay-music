@@ -1,0 +1,456 @@
+/**
+ * Web desktop UI — browser only ([data-surface="web"]).
+ * Native Capacitor keeps the existing mobile Spotify-style UI.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+[data-surface="web"] {
+  --web-bg: #0c0e12;
+  --web-panel: #14181f;
+  --web-panel-2: #1a2029;
+  --web-line: rgba(255, 255, 255, 0.08);
+  --web-text: #f4f6f8;
+  --web-muted: #9aa3af;
+  --web-accent: #ff6b00;
+  --web-play: #2dd4a8;
+  --web-rail: 248px;
+  font-family: 'IBM Plex Sans', 'Sora', system-ui, sans-serif;
+}
+
+[data-surface="web"] body,
+[data-surface="web"] .app-container,
+[data-surface="web"] .auth-gate-page {
+  font-family: 'IBM Plex Sans', 'Sora', system-ui, sans-serif;
+  background: var(--web-bg);
+  color: var(--web-text);
+}
+
+/* ── Auth: split hero + form ── */
+[data-surface="web"] .auth-gate-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 480px);
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+[data-surface="web"] .auth-gate-backdrop {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px 56px 56px;
+  background:
+    linear-gradient(160deg, rgba(12, 14, 18, 0.25) 0%, rgba(12, 14, 18, 0.92) 55%, #0c0e12 100%),
+    radial-gradient(ellipse at 20% 10%, rgba(255, 107, 0, 0.35), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(45, 212, 168, 0.18), transparent 45%),
+    #12161d;
+  pointer-events: auto;
+}
+
+[data-surface="web"] .auth-web-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  max-width: 420px;
+}
+
+[data-surface="web"] .auth-web-hero-brand {
+  margin: 0;
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(2.6rem, 4.5vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  color: #fff;
+}
+
+[data-surface="web"] .auth-web-hero-copy {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--web-muted);
+}
+
+/* Mobile surface / default: hide web hero copy block */
+.auth-web-hero {
+  display: none;
+}
+
+[data-surface="web"] .auth-gate-card {
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 40px 44px;
+  overflow-y: auto;
+  background: var(--web-panel);
+  border-left: 1px solid var(--web-line);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+[data-surface="web"] .auth-gate-header {
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+[data-surface="web"] .auth-gate-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.85rem;
+  letter-spacing: -0.04em;
+  text-align: left;
+}
+
+[data-surface="web"] .auth-gate-live-line {
+  color: var(--web-play);
+}
+
+[data-surface="web"] .auth-feature-strip {
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 24px;
+}
+
+[data-surface="web"] .auth-feature-chip {
+  background: var(--web-panel-2);
+  border-color: var(--web-line);
+  border-radius: 10px;
+  min-height: 84px;
+}
+
+[data-surface="web"] .auth-gate-tabs {
+  background: #0f1318;
+  border: 1px solid var(--web-line);
+  border-radius: 12px;
+}
+
+[data-surface="web"] .auth-gate-tab.active {
+  background: var(--web-accent);
+  color: #111;
+}
+
+[data-surface="web"] .auth-submit-btn,
+[data-surface="web"] button.auth-submit-btn {
+  background: var(--web-accent) !important;
+  color: #111 !important;
+  border-radius: 10px !important;
+  font-weight: 700;
+}
+
+/* ── App shell ── */
+[data-surface="web"] .app-container {
+  background: var(--web-bg);
+}
+
+[data-surface="web"] .main-viewport {
+  gap: 0;
+  padding: 0;
+  background: var(--web-bg);
+}
+
+[data-surface="web"] .spotify-bottom-nav,
+[data-surface="web"] .sidebar-overlay,
+[data-surface="web"] .sidebar.spotify-profile-drawer,
+[data-surface="web"] .hamburger-btn {
+  display: none !important;
+}
+
+[data-surface="web"] .web-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: var(--web-rail);
+  flex-shrink: 0;
+  background: var(--web-panel);
+  border-right: 1px solid var(--web-line);
+  padding: 20px 14px 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+[data-surface="web"] .web-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  color: var(--web-text);
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 6px 8px 18px;
+  cursor: pointer;
+  text-align: left;
+}
+
+[data-surface="web"] .web-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+[data-surface="web"] .web-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--web-muted);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+[data-surface="web"] .web-nav-item:hover {
+  color: var(--web-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-surface="web"] .web-nav-item.active {
+  color: #111;
+  background: var(--web-accent);
+}
+
+[data-surface="web"] .web-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--web-line);
+}
+
+[data-surface="web"] .web-wallet-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 107, 0, 0.35);
+  background: rgba(255, 107, 0, 0.12);
+  color: var(--web-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+[data-surface="web"] .web-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--web-panel-2);
+}
+
+[data-surface="web"] .web-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--web-accent);
+  color: #111;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+[data-surface="web"] .web-user-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-surface="web"] .web-user-meta strong {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-surface="web"] .web-user-meta span {
+  font-size: 0.72rem;
+  color: var(--web-muted);
+  text-transform: capitalize;
+}
+
+[data-surface="web"] .web-logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--web-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+[data-surface="web"] .web-logout-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-surface="web"] .content-wrapper {
+  background:
+    radial-gradient(ellipse at 70% -10%, rgba(255, 107, 0, 0.12), transparent 42%),
+    var(--web-bg);
+  border-radius: 0;
+  padding-bottom: 100px;
+}
+
+[data-surface="web"] .top-bar {
+  display: flex !important;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(12, 14, 18, 0.86);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--web-line);
+  padding: 14px 28px;
+  margin: 0;
+}
+
+[data-surface="web"] .top-bar-mobile-hide {
+  display: flex !important;
+}
+
+[data-surface="web"] .search-input-wrapper.hide-mobile {
+  display: flex !important;
+  min-width: 320px;
+  background: var(--web-panel-2);
+  border: 1px solid var(--web-line);
+  border-radius: 999px;
+}
+
+[data-surface="web"] .sp-home,
+[data-surface="web"] .view-content {
+  padding: 28px 32px 40px;
+  max-width: 1200px;
+}
+
+[data-surface="web"] .sp-home-header {
+  margin-bottom: 8px;
+}
+
+[data-surface="web"] .sp-home-avatar {
+  display: none;
+}
+
+[data-surface="web"] .sp-features-panel {
+  margin: 8px 0 28px;
+}
+
+[data-surface="web"] .sp-features-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.55rem;
+}
+
+[data-surface="web"] .sp-features-scroll {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  overflow: visible;
+  scroll-snap-type: none;
+}
+
+[data-surface="web"] .sp-feature-card {
+  flex: none;
+  min-height: 118px;
+  background: var(--web-panel);
+  border-color: var(--web-line);
+}
+
+[data-surface="web"] .sp-quick-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+[data-surface="web"] .sp-quick-tile {
+  background: var(--web-panel);
+  border: 1px solid var(--web-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+[data-surface="web"] .sp-quick-tile:hover {
+  background: var(--web-panel-2);
+}
+
+[data-surface="web"] .sp-shelf-head h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.35rem;
+}
+
+[data-surface="web"] .sp-play-all-btn {
+  background: var(--web-play) !important;
+  color: #06261c !important;
+  border-radius: 999px;
+}
+
+[data-surface="web"] .player-bar,
+[data-surface="web"] .spotify-desktop-player,
+[data-surface="web"] .spotify-player-bar {
+  background: var(--web-panel) !important;
+  border-top: 1px solid var(--web-line) !important;
+}
+
+/* Narrow browser windows: stack auth, keep web styling */
+@media (max-width: 960px) {
+  [data-surface="web"] .auth-gate-page {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  [data-surface="web"] .auth-gate-backdrop {
+    min-height: 220px;
+    padding: 32px 24px;
+  }
+
+  [data-surface="web"] .auth-gate-backdrop::before {
+    font-size: 2.2rem;
+  }
+
+  [data-surface="web"] .auth-gate-card {
+    padding: 28px 20px 40px;
+    border-left: none;
+    border-top: 1px solid var(--web-line);
+  }
+
+  [data-surface="web"] .web-sidebar {
+    display: none;
+  }
+
+  [data-surface="web"] .spotify-bottom-nav {
+    display: flex !important;
+  }
+
+  [data-surface="web"] .sidebar.spotify-profile-drawer {
+    display: flex !important;
+  }
+
+  [data-surface="web"] .hamburger-btn {
+    display: inline-flex !important;
+  }
+
+  [data-surface="web"] .sp-features-scroll {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-surface="web"] .sp-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

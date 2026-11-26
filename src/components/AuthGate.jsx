@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePlayer } from '../context/PlayerContext';
 import {
   Lock, Mail, User, Phone, ArrowRight,
@@ -14,8 +14,13 @@ import {
   clearDeadApiOverride
 } from '../services/authService';
 import { APP_FEATURE_SHORT } from '../data/appFeatures';
+import { applyAppSurface } from '../utils/appSurface';
 
 export default function AuthGate() {
+  useEffect(() => {
+    applyAppSurface();
+  }, []);
+
   const {
     loginUserAction,
     registerUserAction,
@@ -245,7 +250,16 @@ export default function AuthGate() {
 
   return (
     <div className="auth-gate-page">
-      <div className="auth-gate-backdrop" />
+      <div className="auth-gate-backdrop" aria-hidden="true">
+        <div className="auth-web-hero">
+          <DobbyPayLogo size="large" />
+          <p className="auth-web-hero-brand">DobbyPay Music</p>
+          <p className="auth-web-hero-copy">
+            Stream Indian hits on a cloud Express API — resume where you left off, tip artists,
+            and manage approvals from the web console.
+          </p>
+        </div>
+      </div>
 
       <div className="auth-gate-card">
         {/* Brand Header */}
