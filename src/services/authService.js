@@ -380,7 +380,11 @@ export async function registerUser({ username, email, password, fullName, phone 
           pendingApproval: !!data.pendingApproval && !data.autoApproved,
           autoApproved: !!data.autoApproved,
           user: data.user,
-          message: data.message || 'Registration saved to MySQL.'
+          message: data.message || 'Registration saved to MySQL.',
+          adminWhatsApp: data.adminWhatsApp || null,
+          whatsappUrl: data.whatsappUrl || null,
+          whatsappSent: !!data.whatsappSent,
+          whatsappStatus: data.whatsappStatus || null,
         };
       }
       if (status === 409 || status === 400) {
@@ -560,6 +564,9 @@ export async function approveUserAndSendEmail(userId, approvedBy = 'Super Admin'
           message: data.message || 'User approved successfully!',
           emailStatus: data.emailStatus,
           user: data.user,
+          whatsappUrl: data.whatsappUrl || null,
+          whatsappSent: !!data.whatsappSent,
+          whatsappStatus: data.whatsappStatus || null,
         };
       }
     }

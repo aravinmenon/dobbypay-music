@@ -1958,7 +1958,11 @@ const registerUserAction = async ({ username, email, password, fullName, phone }
         success: true,
         pendingApproval: true,
         user: res.user,
-        message: res.message || 'Registration submitted! Please wait for Admin & Super Admin approval before logging in.'
+        message: res.message || 'Registration submitted! Please wait for Admin & Super Admin approval before logging in.',
+        adminWhatsApp: res.adminWhatsApp || null,
+        whatsappUrl: res.whatsappUrl || null,
+        whatsappSent: !!res.whatsappSent,
+        whatsappStatus: res.whatsappStatus || null,
       };
     }
     return {

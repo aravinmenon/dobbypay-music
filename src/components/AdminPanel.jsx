@@ -81,6 +81,15 @@ export default function AdminPanel() {
     try {
       const res = await approveUserAndSendEmail(user.id, 'Admin', action);
       triggerToast(res.message || `Done: ${action}`);
+      // Auto WhatsApp to user (or open wa.me if Cloud API not configured)
+      if (res.whatsappUrl && !res.whatsappSent) {
+        try {
+          window.open(res.whatsappUrl, '_blank', 'noopener,noreferrer');
+        } catch (_) {}
+        triggerToast('📱 Opening WhatsApp approval message…');
+      } else if (res.whatsappSent) {
+        triggerToast('📱 WhatsApp approval message sent');
+      }
       await loadUsers();
     } catch (err) {
       triggerToast(`❌ ${err.message || 'Action failed'}`);

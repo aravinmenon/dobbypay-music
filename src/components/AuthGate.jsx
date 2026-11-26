@@ -173,8 +173,23 @@ export default function AuthGate() {
           isNewRegistration: true,
           user: res.user,
           error: res.message || 'Registration stored in database! Pending Admin & Super Admin approval.',
-          adminWhatsApp: res.adminWhatsApp || '+918270006116'
+          adminWhatsApp: res.adminWhatsApp || '+918270006116',
+          whatsappUrl: res.whatsappUrl || null,
+          whatsappSent: !!res.whatsappSent,
         });
+
+        // Auto-open WhatsApp approval message to Admin (wa.me) if API did not already send
+        const waUrl = res.whatsappUrl;
+        if (waUrl && !res.whatsappSent) {
+          try {
+            window.open(waUrl, '_blank', 'noopener,noreferrer');
+          } catch (_) {}
+          if (typeof triggerToast === 'function') {
+            triggerToast('📱 Opening WhatsApp to notify Admin…');
+          }
+        } else if (res.whatsappSent && typeof triggerToast === 'function') {
+          triggerToast('📱 WhatsApp sent to Admin automatically');
+        }
       } else {
         const isConflict = res.alreadyExists || (res.error && res.error.toLowerCase().includes('already registered'));
         if (isConflict) {
@@ -209,6 +224,10 @@ export default function AuthGate() {
 
   const openWhatsAppApproval = () => {
     if (!approvalAlert) return;
+    if (approvalAlert.whatsappUrl) {
+      window.open(approvalAlert.whatsappUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
     const phone = (approvalAlert.adminWhatsApp || '918270006116').replace(/[^0-9]/g, '');
     const user = approvalAlert.user || {};
     const suspended = !!approvalAlert.suspended;
@@ -226,7 +245,7 @@ export default function AuthGate() {
           `💼 Role: ${user.role || 'client'}\n\n` +
           `Please approve my access so I can log in. Thank you!`
     );
-    window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${phone}?text=${text}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleRequestReactivation = async () => {

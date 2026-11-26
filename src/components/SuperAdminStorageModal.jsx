@@ -61,6 +61,14 @@ export default function SuperAdminStorageModal() {
         reactivate: `🔄 Reactivated ${user.name}`
       };
       triggerToast(res.message || labels[action] || 'Done');
+      if (res.whatsappUrl && !res.whatsappSent) {
+        try {
+          window.open(res.whatsappUrl, '_blank', 'noopener,noreferrer');
+        } catch (_) {}
+        triggerToast('📱 Opening WhatsApp message for user…');
+      } else if (res.whatsappSent) {
+        triggerToast('📱 WhatsApp sent to user');
+      }
       await loadUsers();
       return res;
     } catch (err) {

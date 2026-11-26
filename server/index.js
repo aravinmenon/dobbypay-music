@@ -10,6 +10,11 @@ import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import { sendCustomerApprovalEmail, sendCustomEmail } from './emailService.js';
 import { readLibrary, writeLibrary } from './library.js';
+import {
+  notifyAdminNewRegistration,
+  notifyUserApproval,
+  getAdminWhatsAppPhone,
+} from './whatsappService.js';
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -441,6 +446,14 @@ async function handleRegister(req, res) {
       vip_status: autoApprove
     };
 
+    // Auto WhatsApp to Admin on every new registration (API send and/or wa.me link)
+    let whatsapp = null;
+    try {
+      whatsapp = await notifyAdminNewRegistration(user);
+    } catch (waErr) {
+      console.warn('WhatsApp register notify note:', waErr.message);
+    }
+
     return res.status(201).json({
       success: true,
       status: true,
@@ -448,8 +461,12 @@ async function handleRegister(req, res) {
       pendingApproval: !autoApprove,
       message: autoApprove
         ? 'Registration saved to MySQL. You can sign in now.'
-        : 'Registration successful! Your account is pending Admin & Super Admin approval before you can log in.',
-      user
+        : 'Registration successful! WhatsApp approval request prepared for Admin. Pending Admin & Super Admin approval before you can log in.',
+      user,
+      adminWhatsApp: `+${getAdminWhatsAppPhone()}`,
+      whatsappUrl: whatsapp?.whatsappUrl || null,
+      whatsappSent: Boolean(whatsapp?.sent),
+      whatsappStatus: whatsapp || null,
     });
   } catch (err) {
     console.error('Registration error:', err);
@@ -1033,11 +1050,27 @@ app.post('/api/admin/approve-user', async (req, res) => {
       stage: emailStage
     });
 
+    // 4. Auto WhatsApp to customer (phone) — or wa.me fallback for admin to open
+    let whatsapp = null;
+    try {
+      const [freshRows] = await pool.query(
+        `SELECT id, name, email, phone, role, status FROM users WHERE id = ? LIMIT 1`,
+        [userId]
+      );
+      const freshUser = freshRows?.[0] || targetUser;
+      whatsapp = await notifyUserApproval(freshUser, emailStage, approvedBy);
+    } catch (waErr) {
+      console.warn('WhatsApp approve notify note:', waErr.message);
+    }
+
     res.json({
       success: true,
       message: defaultMsg,
       emailStatus: emailResult,
-      action
+      action,
+      whatsappUrl: whatsapp?.whatsappUrl || null,
+      whatsappSent: Boolean(whatsapp?.sent),
+      whatsappStatus: whatsapp || null,
     });
   } catch (err) {
     console.error('Approve user error:', err.message);
