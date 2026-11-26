@@ -22,12 +22,12 @@ export function normalizeWhatsAppPhone(value, defaultCountry = '91') {
 }
 
 export function getAdminWhatsAppPhone() {
-  return normalizeWhatsAppPhone(process.env.ADMIN_WHATSAPP || '+918270006116');
+  return normalizeWhatsAppPhone(process.env.ADMIN_WHATSAPP || '+919597072006');
 }
 
 export function getSuperAdminWhatsAppPhone() {
   return normalizeWhatsAppPhone(
-    process.env.SUPER_ADMIN_WHATSAPP || process.env.ADMIN_WHATSAPP || '+918270006116'
+    process.env.SUPER_ADMIN_WHATSAPP || process.env.ADMIN_WHATSAPP || '+919597072006'
   );
 }
 

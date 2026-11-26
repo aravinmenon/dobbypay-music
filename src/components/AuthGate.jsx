@@ -79,7 +79,7 @@ export default function AuthGate() {
         setApprovalAlert({
           user: res.user,
           error: res.error,
-          adminWhatsApp: res.adminWhatsApp || '+918270006116',
+          adminWhatsApp: res.adminWhatsApp || '+919597072006',
           suspended: !!res.suspended || res.user?.status === 'suspended',
           reactivationRequested: !!res.reactivationRequested || Number(res.user?.reactivation_requested) === 1
         });
@@ -173,7 +173,7 @@ export default function AuthGate() {
           isNewRegistration: true,
           user: res.user,
           error: res.message || 'Registration stored in database! Pending Admin & Super Admin approval.',
-          adminWhatsApp: res.adminWhatsApp || '+918270006116',
+          adminWhatsApp: res.adminWhatsApp || '+919597072006',
           whatsappUrl: res.whatsappUrl || null,
           whatsappSent: !!res.whatsappSent,
         });
@@ -228,7 +228,7 @@ export default function AuthGate() {
       window.open(approvalAlert.whatsappUrl, '_blank', 'noopener,noreferrer');
       return;
     }
-    const phone = (approvalAlert.adminWhatsApp || '918270006116').replace(/[^0-9]/g, '');
+    const phone = (approvalAlert.adminWhatsApp || '919597072006').replace(/[^0-9]/g, '');
     const user = approvalAlert.user || {};
     const suspended = !!approvalAlert.suspended;
     const text = encodeURIComponent(

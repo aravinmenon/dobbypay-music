@@ -438,7 +438,7 @@ export async function loginUser({ identifier, password }) {
           reactivationRequested: !!data.reactivationRequested || Number(data.user?.reactivation_requested) === 1,
           error: data.message || data.error || 'Your account is awaiting admin approval.',
           user: data.user || { email: cleanId, name: cleanId, role: 'client' },
-          adminWhatsApp: data.adminWhatsApp || '+918270006116'
+          adminWhatsApp: data.adminWhatsApp || '+919597072006'
         };
       }
 

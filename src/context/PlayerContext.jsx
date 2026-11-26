@@ -1933,7 +1933,7 @@ const loginUserAction = async (identifier, password) => {
         reactivationRequested: !!res.reactivationRequested,
         error: res.error,
         user: res.user,
-        adminWhatsApp: res.adminWhatsApp || '+918270006116'
+        adminWhatsApp: res.adminWhatsApp || '+919597072006'
       };
     }
     return {

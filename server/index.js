@@ -538,7 +538,7 @@ async function handleLogin(req, res) {
           reactivation_requested: reactivationRequested,
           phone: userRow.phone
         },
-        adminWhatsApp: process.env.ADMIN_WHATSAPP || '+918270006116'
+        adminWhatsApp: process.env.ADMIN_WHATSAPP || '+919597072006'
       });
     }
 
@@ -559,7 +559,7 @@ async function handleLogin(req, res) {
           superadmin_approved: userRow.superadmin_approved,
           phone: userRow.phone
         },
-        adminWhatsApp: process.env.ADMIN_WHATSAPP || '+918270006116'
+        adminWhatsApp: process.env.ADMIN_WHATSAPP || '+919597072006'
       });
     }
 
@@ -970,7 +970,7 @@ async function handleRequestReactivation(req, res) {
         status: 'suspended',
         reactivation_requested: 1
       },
-      adminWhatsApp: process.env.ADMIN_WHATSAPP || '+918270006116'
+      adminWhatsApp: process.env.ADMIN_WHATSAPP || '+919597072006'
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -1100,7 +1100,7 @@ function extractLookupIdentifier(raw) {
 }
 
 function buildApprovalStatusPayload(userRow) {
-  const adminWa = String(process.env.ADMIN_WHATSAPP || '+918270006116').replace(/[^0-9]/g, '');
+  const adminWa = String(process.env.ADMIN_WHATSAPP || '+919597072006').replace(/[^0-9]/g, '');
   if (!userRow) {
     return {
       found: false,
@@ -1244,7 +1244,7 @@ app.post('/api/chat', async (req, res) => {
         success: true,
         enabled,
         greeting: AUTH_CHAT_GREETING,
-        adminWhatsApp: process.env.ADMIN_WHATSAPP || '+918270006116'
+        adminWhatsApp: process.env.ADMIN_WHATSAPP || '+919597072006'
       });
     }
 
