@@ -79,6 +79,29 @@ initDatabase()
     startDbReconnectLoop();
   });
 
+app.get(['/api', '/api/'], (_req, res) => {
+  res.json({
+    success: true,
+    status: true,
+    name: 'DobbyPay Music Express API',
+    web: 'https://dobbypay-music.onrender.com/',
+    mysql: isDatabaseOnline(),
+    mode: isDatabaseOnline() ? 'clever-cloud-mysql' : 'offline-staff-fallback',
+    endpoints: {
+      health: 'GET /api/health',
+      songs: 'GET /api/songs',
+      directors: 'GET /api/directors',
+      login: 'POST /api/auth/login',
+      register: 'POST /api/auth/register',
+      library: 'GET|PUT /api/library',
+      adminUsers: 'GET /api/admin/users',
+      approveUser: 'POST /api/admin/approve-user',
+      walletTip: 'POST /api/wallet/tip',
+      walletTopup: 'POST /api/wallet/topup',
+    },
+  });
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({
     success: true,
